@@ -43,7 +43,15 @@ impl Default for Person {
 // I AM NOT DONE
 
 impl From<&str> for Person {
+    fn default() -> Person{
+        Person{
+            name:"John".to_string(),
+            age:30
+        }
+    }
+
     fn from(s: &str) -> Person {
+        
     }
 }
 
