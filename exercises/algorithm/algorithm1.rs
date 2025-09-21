@@ -2,7 +2,6 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
@@ -60,6 +59,7 @@ impl<T> LinkedList<T> {
         self.get_ith_node(self.start, index)
     }
 
+
     fn get_ith_node(&mut self, node: Option<NonNull<Node<T>>>, index: i32) -> Option<&T> {
         match node {
             None => None,
@@ -69,15 +69,42 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
-	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+	pub fn merge(mut list_a: LinkedList<T>, mut list_b: LinkedList<T>) -> Self
+    where
+        T: Ord,
+    {
+        let mut result = LinkedList::new();
+        let mut a_current = list_a.start;
+        let mut b_current = list_b.start;
+
+        while let (Some(a_ptr), Some(b_ptr)) = (a_current, b_current) {
+            let a_val = unsafe { &(*a_ptr.as_ptr()).val };
+            let b_val = unsafe { &(*b_ptr.as_ptr()).val };
+
+            if a_val <= b_val {
+                // 从a链表取节点
+                result.add(unsafe { std::ptr::read(&(*a_ptr.as_ptr()).val) });
+                a_current = unsafe { (*a_ptr.as_ptr()).next };
+            } else {
+                // 从b链表取节点
+                result.add(unsafe { std::ptr::read(&(*b_ptr.as_ptr()).val) });
+                b_current = unsafe { (*b_ptr.as_ptr()).next };
+            }
         }
-	}
+
+        // 添加剩余节点
+        while let Some(a_ptr) = a_current {
+            result.add(unsafe { std::ptr::read(&(*a_ptr.as_ptr()).val) });
+            a_current = unsafe { (*a_ptr.as_ptr()).next };
+        }
+
+        while let Some(b_ptr) = b_current {
+            result.add(unsafe { std::ptr::read(&(*b_ptr.as_ptr()).val) });
+            b_current = unsafe { (*b_ptr.as_ptr()).next };
+        }
+
+        result
+    }
 }
 
 impl<T> Display for LinkedList<T>
