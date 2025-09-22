@@ -3,7 +3,6 @@
 	This problem requires you to implement a basic interface for a binary tree
 */
 
-//I AM NOT DONE
 use std::cmp::Ordering;
 use std::fmt::Debug;
 
@@ -51,12 +50,34 @@ where
     // Insert a value into the BST
     fn insert(&mut self, value: T) {
         //TODO
+        if self.root.is_none() {
+            self.root = Some(Box::new(TreeNode::new(value)));
+            return;
+        }
+        
+        // 否则，调用根节点的insert方法进行插入
+        self.root.as_mut().unwrap().insert(value);
     }
 
     // Search for a value in the BST
     fn search(&self, value: T) -> bool {
         //TODO
-        true
+        let mut current = &self.root;
+        
+        // 遍历树直到找到值或到达叶子节点
+        while let Some(node) = current {
+            if value == node.value {
+                // 找到值，返回true
+                return true;
+            } else if value < node.value {
+                // 值小于当前节点，向左子树搜索
+                current = &node.left;
+            } else {
+                // 值大于当前节点，向右子树搜索
+                current = &node.right;
+            }
+        }
+        false
     }
 }
 
@@ -67,6 +88,25 @@ where
     // Insert a node into the tree
     fn insert(&mut self, value: T) {
         //TODO
+        if value < self.value {
+            // 值小于当前节点，插入左子树
+            if self.left.is_none() {
+                // 左子树为空，直接创建新节点
+                self.left = Some(Box::new(TreeNode::new(value)));
+            } else {
+                // 左子树不为空，递归插入左子树
+                self.left.as_mut().unwrap().insert(value);
+            }
+        } else if value > self.value {
+            // 值大于当前节点，插入右子树
+            if self.right.is_none() {
+                // 右子树为空，直接创建新节点
+                self.right = Some(Box::new(TreeNode::new(value)));
+            } else {
+                // 右子树不为空，递归插入右子树
+                self.right.as_mut().unwrap().insert(value);
+            }
+        }
     }
 }
 

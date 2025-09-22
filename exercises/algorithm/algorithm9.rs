@@ -2,8 +2,6 @@
 	heap
 	This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
-
 use std::cmp::Ord;
 use std::default::Default;
 
@@ -38,6 +36,24 @@ where
 
     pub fn add(&mut self, value: T) {
         //TODO
+        self.count += 1;
+        // 确保向量有足够空间，索引从1开始
+        if self.count >= self.items.len() {
+            self.items.push(value);
+        } else {
+            self.items[self.count] = value;
+        }
+        // 向上调整堆
+        let mut idx = self.count;
+        while idx > 1 {
+            let parent = self.parent_idx(idx);
+            if (self.comparator)(&self.items[idx], &self.items[parent]) {
+                self.items.swap(idx, parent);
+                idx = parent;
+            } else {
+                break;
+            }
+        }
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -58,7 +74,20 @@ where
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
         //TODO
-		0
+		let left = self.left_child_idx(idx);
+        let right = self.right_child_idx(idx);
+        
+        // 检查右孩子是否存在
+        if right <= self.count {
+            // 根据比较器选择符合条件的子节点
+            if (self.comparator)(&self.items[left], &self.items[right]) {
+                left
+            } else {
+                right
+            }
+        } else {
+            left
+        }
     }
 }
 
@@ -85,7 +114,31 @@ where
 
     fn next(&mut self) -> Option<T> {
         //TODO
-		None
+		 if self.is_empty() {
+            return None;
+        }
+        
+        // 取出堆顶元素
+        let top = std::mem::take(&mut self.items[1]);
+        // 将最后一个元素移到堆顶
+        if self.count > 1 {
+            self.items[1] = std::mem::take(&mut self.items[self.count]);
+        }
+        self.count -= 1;
+        
+        // 向下调整堆
+        let mut idx = 1;
+        while self.children_present(idx) {
+            let child_idx = self.smallest_child_idx(idx);
+            if (self.comparator)(&self.items[child_idx], &self.items[idx]) {
+                self.items.swap(idx, child_idx);
+                idx = child_idx;
+            } else {
+                break;
+            }
+        }
+        
+        Some(top)
     }
 }
 
